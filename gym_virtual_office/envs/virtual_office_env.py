@@ -2,8 +2,8 @@ from gym_minigrid.minigrid import *
 
 '''
 TODO:
-- Implement step method.
 - Ensure the goals are invisible to the agent.
+- Fix observations.
 '''
 
 
@@ -20,7 +20,7 @@ class VirtualOfficeEnv(MiniGridEnv):
         south = 2
         west = 3
 
-    def __init__(self, grid_size=9, width=None, height=None, max_steps=100, see_through_walls=False, agent_view_size=3):
+    def __init__(self, grid_size=9, max_steps=100, see_through_walls=False, agent_view_size=3):
         super().__init__(grid_size=grid_size, max_steps=max_steps, see_through_walls=see_through_walls, agent_view_size=agent_view_size)
 
         # Re-define actions:
@@ -47,8 +47,8 @@ class VirtualOfficeEnv(MiniGridEnv):
                 self.grid.set(col, row, Floor(color='green'))
 
         # Set the goal states:
-        self.minor_goal_location = (width-2, 1)
-        self.major_goal_location = (width-2, height-2)
+        self.minor_goal_location = np.array([width-2, height-2])
+        self.major_goal_location = np.array([width-2, 1])
         self.grid.set(*self.minor_goal_location, Goal())
         self.grid.set(*self.major_goal_location, Goal())
 
@@ -101,9 +101,9 @@ class VirtualOfficeEnv(MiniGridEnv):
         return obs, reward, done, {}
 
     def _reward(self):
-        if self.agent_pos == self.major_goal_location:
+        if (self.agent_pos == self.major_goal_location).all():
             return 1
-        elif self.agent_pos == self.minor_goal_location:
+        elif (self.agent_pos == self.minor_goal_location).all():
             return .5
         else:
             return 0
