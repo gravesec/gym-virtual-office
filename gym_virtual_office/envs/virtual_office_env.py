@@ -46,11 +46,9 @@ class VirtualOfficeEnv(MiniGridEnv):
             for row in range(0, height-1):
                 self.grid.set(col, row, Floor(color='green'))
 
-        # Set the goal states:
+        # Set the hidden goal states:
         self.minor_goal_location = np.array([width-2, height-2])
         self.major_goal_location = np.array([width-2, 1])
-        self.grid.set(*self.minor_goal_location, Goal())
-        self.grid.set(*self.major_goal_location, Goal())
 
         # Create surrounding walls:
         self.grid.horz_wall(0, 0)
@@ -71,7 +69,7 @@ class VirtualOfficeEnv(MiniGridEnv):
         self.agent_dir = 0  # Pointing east.
 
         # Include a mission string:
-        self.mission = 'Reach one of the goals'
+        self.mission = 'Reach one of the hidden goals.'
 
     def step(self, action):
         self.step_count += 1
@@ -93,17 +91,15 @@ class VirtualOfficeEnv(MiniGridEnv):
         fwd_cell = self.grid.get(*fwd_pos)
         if fwd_cell is None or fwd_cell.can_overlap():
             self.agent_pos = fwd_pos
-        if fwd_cell is not None and fwd_cell.type == 'goal':
+
+        if (self.agent_pos == self.major_goal_location).all():
+            reward = 1.
             done = True
+        elif (self.agent_pos == self.minor_goal_location).all():
+            reward = .5
+            done = True
+        else:
+            reward = .0
 
         obs = self.gen_obs()
-        reward = self._reward()
         return obs, reward, done, {}
-
-    def _reward(self):
-        if (self.agent_pos == self.major_goal_location).all():
-            return 1
-        elif (self.agent_pos == self.minor_goal_location).all():
-            return .5
-        else:
-            return 0
