@@ -1,11 +1,5 @@
 from gym_minigrid.minigrid import *
 
-'''
-TODO:
-- Ensure the goals are invisible to the agent.
-- Fix observations.
-'''
-
 
 class VirtualOfficeEnv(MiniGridEnv):
 
