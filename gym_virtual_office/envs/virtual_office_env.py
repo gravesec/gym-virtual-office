@@ -41,8 +41,10 @@ class VirtualOfficeEnv(MiniGridEnv):
                 self.grid.set(col, row, Floor(color='green'))
 
         # Set the hidden goal states:
-        self.minor_goal_location = np.array([width-2, height-2])
-        self.major_goal_location = np.array([width-2, 1])
+        self.top_major_goal_location = np.array([width-2, 1])
+        self.top_minor_goal_location = np.array([width-2, 3])
+        self.bottom_minor_goal_location = np.array([width-2, height-4])
+        self.bottom_major_goal_location = np.array([width-2, height-2])
 
         # Create surrounding walls:
         self.grid.horz_wall(0, 0)
@@ -86,10 +88,16 @@ class VirtualOfficeEnv(MiniGridEnv):
         if fwd_cell is None or fwd_cell.can_overlap():
             self.agent_pos = fwd_pos
 
-        if (self.agent_pos == self.major_goal_location).all():
+        if (self.agent_pos == self.top_major_goal_location).all():
             reward = 1.
             done = True
-        elif (self.agent_pos == self.minor_goal_location).all():
+        elif (self.agent_pos == self.top_minor_goal_location).all():
+            reward = 0.
+            done = True
+        elif (self.agent_pos == self.bottom_minor_goal_location).all():
+            reward = 0.
+            done = True
+        elif (self.agent_pos == self.bottom_major_goal_location).all():
             reward = .5
             done = True
         else:
