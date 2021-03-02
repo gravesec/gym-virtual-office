@@ -86,7 +86,7 @@ class VirtualOfficeEnv(MiniGridEnv):
         fwd_pos = self.front_pos
         fwd_cell = self.grid.get(*fwd_pos)
         if fwd_cell is None or fwd_cell.can_overlap():
-            self.agent_pos = fwd_pos
+            self.agent_pos = tuple(fwd_pos)
 
         if (self.agent_pos == self.top_major_goal_location).all():
             reward = 1.
